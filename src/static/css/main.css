@@ -1,0 +1,56 @@
+body { padding-top: 70px; }
+
+.form {
+    max-width: 640px;
+    margin: 0 auto;
+
+    background-color: #E9E9E9;
+    padding: 20px;
+
+    border: 1px solid #D5D5D5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.compare-table {
+    margin: 30px auto;
+    width: 65%
+}
+
+.project-overview {
+    margin: 30px auto;
+    width: 80%
+}
+
+.table-option {
+    margin: 10px auto;
+    width: 50%;
+    font-size: 20px;
+    font-family: "Georgia", Times, serif;
+}
+
+.block {
+    text-align: center;
+    vertical-align: middle;
+}
+.circle {
+    background: #E5E5E5;
+    border-radius: 200px;
+    color: #224422;
+    height: 200px;
+    font-weight: bold;
+    width: 200px;
+    display: table;
+    margin: 20px auto;
+}
+.circle p {
+    vertical-align: middle;
+    display: table-cell;
+    font-size: 17px;
+    font-family: "Georgia", Times, serif;
+}
+
+.start {
+    margin-left: 9.5%;
+}

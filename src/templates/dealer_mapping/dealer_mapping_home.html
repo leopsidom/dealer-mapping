@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="project-overview">
+    <div class="welcom">
+        <p style="font-style: oblique; font-size: 16px; margin-left: 9%">Hi! <strong>{{ stats['email'] }}</strong>
+            Welcome to the dealer mapping project! Wish you would have fun here!!</p>
+    </div>
+    <div class="row">
+        <div class="col-md-4 block">
+            <div class="circle">
+                <p>To be reviewed: <br/> {{ stats['records_to_review'] }} </p>
+            </div>
+        </div>
+        <div class="col-md-4 block">
+            <div class="circle">
+                <p>You have reviewed: <br/> {{ stats['user_reviewed'] }} </p>
+            </div>
+        </div>
+        <div class="col-md-4 block">
+            <div class="circle">
+                {% if stats['rank'] == -1 %}
+                <p>You haven't reviewed anything yet!</p>
+                {% else %}
+                <p>Your current rank: <br/> {{ stats['rank'] }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>
+            <br/><br/><br/><br/><br/>
+            <a class="btn btn-primary btn-sm start" href="{{ url_for('dealer_mapping.pair_of_dealers') }}" role="button">Start Reviewing</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

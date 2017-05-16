@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="compare-table">
+    <div class="table-option">Market Check & PureCars Dealers Pairs</div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Market Check</th>
+                <th>Pure Cars</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in mc_pc_columns %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value[0] }}</td>
+                <td>{{ value[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form name="choice" action="{{ url_for('dealer_mapping.pair_of_dealers') }}" method="POST">
+        <div class="btn-toolbar" role="toolbar">
+            <label class="btn btn-default">
+                <input type="radio" name="options" id="option1" autocomplete="off" value="Match"> Match
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="options" id="option2" autocomplete="off" value="NotMatch"> Not Match
+            </label>
+            <label class="btn btn-default">
+                <input type="radio" name="options" id="option3" autocomplete="off" value="TBD"> TBD
+            </label>
+            <input type="hidden" id="record_id" name="record_id" value="{{ record_id }}">
+            <button type="submit" class="btn btn-success pull-right">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
