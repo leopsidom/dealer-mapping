@@ -1,6 +1,10 @@
+import os
+
 import jaydebeapi
 import re
 import json
+from src.config import ROOT_DIR
+
 
 from src.models.users.errors import UserAlreadyRegisteredError
 
@@ -8,10 +12,13 @@ from src.models.users.errors import UserAlreadyRegisteredError
 class DataBase:
 
     driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-    driverPath = "/Users/purecarscomputer/sqljdbc_6.0/enu/sqljdbc4.jar"
-    uri = "jdbc:sqlserver://pcds-sqlr.database.windows.net:1433;database=pcds_sqlr"
-    user = "pcds-sqlr@pcds-sqlr"
-    pwd = "Pure2017"
+    driverPath = os.path.join(ROOT_DIR, "common/sqljdbc_6.0/enu/sqljdbc4.jar")
+    # uri = "jdbc:sqlserver://pcds-sqlr.database.windows.net:1433;database=pcds_sqlr"
+    uri = os.environ.get("URI")
+    user = os.environ.get("USER")
+    password = os.environ.get("PASSWORD")
+    # user = "pcds-sqlr@pcds-sqlr"
+    # pwd = "Pure2017"
 
     def __init__(self, user=None, pwd=None):
         self.user = user
@@ -26,8 +33,11 @@ class DataBase:
 
     @staticmethod
     def get_connection_default():
+        print(os.environ.get("PASSWORD"))
+        print(DataBase.user)
+        print(DataBase.password)
         conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': DataBase.user, 'password': DataBase.pwd},
+                                  {'user': DataBase.user, 'password': DataBase.password},
                                   DataBase.driverPath)
 
         return conn

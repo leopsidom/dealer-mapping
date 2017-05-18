@@ -13,7 +13,6 @@ def home():
 
     cur.execute("select table_name from information_schema.tables")
     tables = cur.fetchall()
-    print(tables)
 
     return render_template("base.html", tables=tables)
 

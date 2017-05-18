@@ -12,7 +12,7 @@ class DealerMapping:
                        "Zip Code", "Dealer Domain", "Dealer ID"]
 
     def __init__(self, name="dealer mapping", toreview="DealerMapping", reviewed="DealerMappingReviewed",
-                 user_reviewed="UserReviewed", votes_per_record=3):
+                 user_reviewed="UserReviewed", votes_per_record=1):
         self.name = name
         self.toreview = toreview
         self.reviewed = reviewed

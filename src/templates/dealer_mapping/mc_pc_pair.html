@@ -12,11 +12,19 @@
         </thead>
         <tbody>
             {% for key, value in mc_pc_columns %}
+            {% if 'Domain' in key %}
+            <tr>
+                <td>{{ key }}</td>
+                <td><a href="http://www.{{ value[0] }}" target="_blank">{{ value[0] }}</a></td>
+                <td><a href="http://www.{{ value[1] }}" target="_blank">{{ value[1] }}</a></td>
+            </tr>
+            {% else %}
             <tr>
                 <td>{{ key }}</td>
                 <td>{{ value[0] }}</td>
                 <td>{{ value[1] }}</td>
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
