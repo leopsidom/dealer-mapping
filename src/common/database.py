@@ -1,9 +1,6 @@
 import os
-
-import jaydebeapi
-import re
+import pymssql
 import json
-from src.config import ROOT_DIR
 
 
 from src.models.users.errors import UserAlreadyRegisteredError
@@ -11,23 +8,18 @@ from src.models.users.errors import UserAlreadyRegisteredError
 
 class DataBase:
 
-    driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-    driverPath = os.path.join(ROOT_DIR, "common/sqljdbc_6.0/enu/sqljdbc4.jar")
-    # uri = "jdbc:sqlserver://pcds-sqlr.database.windows.net:1433;database=pcds_sqlr"
-    uri = os.environ.get("URI")
+    server = os.environ.get("SERVER")
     user = os.environ.get("USER")
     password = os.environ.get("PASSWORD")
-    # user = "pcds-sqlr@pcds-sqlr"
-    # pwd = "Pure2017"
+    database = os.environ.get("DATABASE")
 
     def __init__(self, user=None, pwd=None):
         self.user = user
         self.pwd = pwd
 
     def get_connection(self):
-        conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': self.user, 'password': self.pwd},
-                                  DataBase.driverPath)
+        conn = pymssql.connect(server=DataBase.server, port=1433, user=self.user,
+                               password=self.pwd, database=DataBase.database)
 
         return conn
 
@@ -36,9 +28,8 @@ class DataBase:
         print(os.environ.get("PASSWORD"))
         print(DataBase.user)
         print(DataBase.password)
-        conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': DataBase.user, 'password': DataBase.password},
-                                  DataBase.driverPath)
+        conn = pymssql.connect(server=DataBase.server, port=1433, user=DataBase.user,
+                               password=DataBase.password, database=DataBase.database)
 
         return conn
 
@@ -51,7 +42,8 @@ class DataBase:
         :return:
         """
 
-        cursor = DataBase.get_connection_default().cursor()
+        conn = DataBase.get_connection_default()
+        cursor = conn.cursor()
         if len(fields) != 0:
             statement = "SELECT TOP 1 * FROM {table} WHERE {condition} for json auto".format(
                 table=table,
@@ -61,7 +53,9 @@ class DataBase:
             statement = "SELECT TOP 1 * FROM {table} for json auto".format(table=table)
 
         cursor.execute(statement)
+        conn.commit()
         json_str = cursor.fetchone()
+        conn.close()
         if json_str is None:
             return None
         else:
@@ -74,7 +68,8 @@ class DataBase:
         :param user_id:
         :return:
         """
-        cursor = DataBase.get_connection_default().cursor()
+        conn = DataBase.get_connection_default()
+        cursor = conn.cursor()
 
         statement = "SELECT TOP 1 d.* FROM DealerMapping d " \
                     "LEFT JOIN (SELECT * FROM UserReviewed WHERE UserId={user_id}) u " \
@@ -83,7 +78,9 @@ class DataBase:
         )
 
         cursor.execute(statement)
+        conn.commit()
         json_str = cursor.fetchone()
+        conn.close()
         if json_str is None:
             return None
         else:
@@ -98,7 +95,8 @@ class DataBase:
         :return:
         """
         try:
-            cursor = DataBase.get_connection_default().cursor()
+            conn = DataBase.get_connection_default()
+            cursor = conn.cursor()
             if len(fields) != 0:
                 column_names, column_values = zip(*fields.items())
                 statement = "INSERT INTO " + table + "(" + \
@@ -106,6 +104,8 @@ class DataBase:
                     "VALUES ('" + "', '".join(column_values) + "')"
                 print(statement)
                 cursor.execute(statement)
+                conn.commit()
+                conn.close()
 
         except:
             raise UserAlreadyRegisteredError("This email has already been registered!")
