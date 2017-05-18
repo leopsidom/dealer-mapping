@@ -25,9 +25,7 @@ class DataBase:
 
     @staticmethod
     def get_connection_default():
-        print(os.environ.get("PASSWORD"))
-        print(DataBase.user)
-        print(DataBase.password)
+
         conn = pymssql.connect(server=DataBase.server, port=1433, user=DataBase.user,
                                password=DataBase.password, database=DataBase.database)
 
@@ -53,9 +51,7 @@ class DataBase:
             statement = "SELECT TOP 1 * FROM {table} for json auto".format(table=table)
 
         cursor.execute(statement)
-        conn.commit()
         json_str = cursor.fetchone()
-        conn.close()
         if json_str is None:
             return None
         else:
@@ -78,9 +74,7 @@ class DataBase:
         )
 
         cursor.execute(statement)
-        conn.commit()
         json_str = cursor.fetchone()
-        conn.close()
         if json_str is None:
             return None
         else:
@@ -102,10 +96,8 @@ class DataBase:
                 statement = "INSERT INTO " + table + "(" + \
                     ", ".join(column_names) + ")" + \
                     "VALUES ('" + "', '".join(column_values) + "')"
-                print(statement)
+
                 cursor.execute(statement)
-                conn.commit()
-                conn.close()
 
         except:
             raise UserAlreadyRegisteredError("This email has already been registered!")
