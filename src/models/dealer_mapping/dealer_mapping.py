@@ -104,7 +104,7 @@ class DealerMapping:
 
         return {'records_to_review': records_to_review,
                 'user_reviewed': user_reviewed,
-                'rank': -1 if rank is None else rank[0]}
+                'rank': -1 if rank is None else rank[2]}
 
 
 

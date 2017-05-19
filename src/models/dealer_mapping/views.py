@@ -15,6 +15,7 @@ def list_of_projects():
         return redirect(url_for("users.login_user"))
     user_id = User.find_by_email(session['email']).userid
     stats = DealerMapping().get_statistics(user_id)
+    print(stats)
     stats.update({'email': session['email']})
     return render_template('dealer_mapping/dealer_mapping_home.html', stats=stats)
 
