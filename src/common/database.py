@@ -36,6 +36,7 @@ class DataBase:
         print(os.environ.get("PASSWORD"))
         print(DataBase.user)
         print(DataBase.password)
+        print("Current Path: ", os.path.abspath(__file__))
         conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
                                   {'user': DataBase.user, 'password': DataBase.password},
                                   DataBase.driverPath)
