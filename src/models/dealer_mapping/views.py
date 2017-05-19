@@ -11,6 +11,8 @@ project_blueprint = Blueprint('dealer_mapping', __name__)
 
 @project_blueprint.route('/', methods=['GET'])
 def list_of_projects():
+    if session['email'] is None:
+        return redirect(url_for("users.login_user"))
     user_id = User.find_by_email(session['email']).userid
     stats = DealerMapping().get_statistics(user_id)
     stats.update({'email': session['email']})
