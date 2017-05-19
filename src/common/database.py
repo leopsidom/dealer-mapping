@@ -37,6 +37,7 @@ class DataBase:
         print(DataBase.user)
         print(DataBase.password)
         print("Current Path: ", os.path.abspath(__file__))
+        print("Directory Exists: ", os.path.exists(os.environ.get("JAVA_HOME")))
         conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
                                   {'user': DataBase.user, 'password': DataBase.password},
                                   DataBase.driverPath)
