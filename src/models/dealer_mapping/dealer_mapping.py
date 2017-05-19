@@ -28,24 +28,26 @@ class DealerMapping:
         )
         if values is None:
             return None
-        record_id = values['RecordId']
+        record_id = values['recordid']
         mc_columns, pc_columns = {}, {}
         mc_dealerid, pc_dealerid = None, None
 
         for column, value in values.items():
-            if column.startswith("MC"):
+            column = column.lower()
+            if column.startswith("mc"):
                 mc_columns[column[3:]] = value
-            if column.startswith("PC"):
+            if column.startswith("pc"):
                 pc_columns[column[3:]] = value
-            if column == "MC_DealerId":
+            if column == "mc_dealerid":
                 mc_dealerid = value
-            if column == "PC_DealerId":
+            if column == "pc_dealerid":
                 pc_dealerid = value
 
-        mc_pc_columns_dict = {key: (mc_columns.get(key, ''), pc_columns.get(key, ''))
+        mc_pc_columns_dict = {key: ('' if mc_columns.get(key) is None else mc_columns.get(key),
+                                    '' if pc_columns.get(key) is None else pc_columns.get(key))
                               for key in set().union(mc_columns, pc_columns)}
-        mc_pc_columns = [(display_dict[col], mc_pc_columns_dict[col])
-                         for col in DealerMapping.order_columns if col in mc_pc_columns_dict]
+        mc_pc_columns = [(display_dict[col], mc_pc_columns_dict[col.lower()])
+                         for col in DealerMapping.order_columns if col.lower() in mc_pc_columns_dict]
 
         return {'mc_pc_columns': mc_pc_columns, 'mc_dealerid': mc_dealerid,
                 'pc_dealerid': pc_dealerid, 'record_id': record_id}

@@ -53,7 +53,7 @@ class User(object):
         :return: True if registered successfully, or False otherwise (exceptions can also be raised)
         """
         user_data = DataBase.find_one_default(UserConstants.COLLECTION, {"email": email})
-
+        print("user: ", user_data is None)
         if user_data is not None:
             raise UserErrors.UserAlreadyRegisteredError("The e-mail you used to register already exists.")
         if not Utils.email_is_valid(email):

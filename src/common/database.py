@@ -4,44 +4,31 @@ import jaydebeapi
 import re
 import json
 from src.config import ROOT_DIR
-
+import os
+import psycopg2
 
 from src.models.users.errors import UserAlreadyRegisteredError
 
 
 class DataBase:
 
-    driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-    driverPath = os.path.join(ROOT_DIR, "common/sqljdbc_6.0/enu/sqljdbc4.jar")
-    # uri = "jdbc:sqlserver://pcds-sqlr.database.windows.net:1433;database=pcds_sqlr"
-    uri = os.environ.get("URI")
-    user = os.environ.get("USER")
-    password = os.environ.get("PASSWORD")
-    proxy_host = os.environ.get("FIXIE_URL")
-    proxy_port = os.environ.get("FIXIE_PORT")
-    # user = "pcds-sqlr@pcds-sqlr"
-    # pwd = "Pure2017"
+    database_url = os.environ.get("DATABASE_URL")
 
     def __init__(self, user=None, pwd=None):
         self.user = user
         self.pwd = pwd
 
     def get_connection(self):
-        conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': self.user, 'password': self.pwd,
-                                   'proxy_host': DataBase.proxy_host, 'proxy_port': DataBase.proxy_port},
-                                  DataBase.driverPath)
+        conn = psycopg2.connect(DataBase.database_url)
+        conn.autocommit = True
 
         return conn
 
     @staticmethod
     def get_connection_default():
 
-        conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': DataBase.user, 'password': DataBase.password,
-                                   'proxy_host': DataBase.proxy_host, 'proxy_port': DataBase.proxy_port},
-                                  DataBase.driverPath)
-
+        conn = psycopg2.connect(DataBase.database_url)
+        conn.autocommit = True
         return conn
 
     @staticmethod
@@ -55,19 +42,21 @@ class DataBase:
 
         cursor = DataBase.get_connection_default().cursor()
         if len(fields) != 0:
-            statement = "SELECT TOP 1 * FROM {table} WHERE {condition} for json auto".format(
+            statement = "SELECT row_to_json({table}) FROM {table} WHERE {condition} limit 1".format(
                 table=table,
                 condition=" and ".join(key + "='" + val + "'" for key, val in fields.items())
             )
         else:
-            statement = "SELECT TOP 1 * FROM {table} for json auto".format(table=table)
+            statement = "SELECT row_to_json({table}) FROM {table} limit 1".format(table=table)
 
+        print(statement)
         cursor.execute(statement)
-        json_str = cursor.fetchone()
-        if json_str is None:
+        result_dict = cursor.fetchone()
+        print(result_dict)
+        if result_dict is None:
             return None
         else:
-            return {k.lower(): v for k, v in json.loads(json_str[0])[0].items()}
+            return {k.lower(): v for k, v in result_dict[0].items()}
 
     @staticmethod
     def find_one_not_reviewed(user_id):
@@ -78,18 +67,19 @@ class DataBase:
         """
         cursor = DataBase.get_connection_default().cursor()
 
-        statement = "SELECT TOP 1 d.* FROM DealerMapping d " \
+        statement = "SELECT row_to_json(d) FROM DealerMapping d " \
                     "LEFT JOIN (SELECT * FROM UserReviewed WHERE UserId={user_id}) u " \
-                    "ON d.RecordId=u.RecordId WHERE u.UserId IS NULL for json auto".format(
+                    "ON d.RecordId=u.RecordId WHERE u.UserId IS NULL limit 1".format(
             user_id=user_id
         )
 
+        print(statement)
         cursor.execute(statement)
-        json_str = cursor.fetchone()
-        if json_str is None:
+        result_dict = cursor.fetchone()
+        if result_dict is None:
             return None
         else:
-            return json.loads(json_str[0])[0]
+            return result_dict[0]
 
     @staticmethod
     def add_one_default(table, fields):
@@ -103,9 +93,9 @@ class DataBase:
             cursor = DataBase.get_connection_default().cursor()
             if len(fields) != 0:
                 column_names, column_values = zip(*fields.items())
-                statement = "INSERT INTO " + table + "(" + \
-                    ", ".join(column_names) + ")" + \
-                    "VALUES ('" + "', '".join(column_values) + "')"
+                statement = "INSERT INTO {table} ({column_names}) VALUES ('{column_values}')".format(
+                    table=table, column_names=", ".join(column_names), column_values="', '".join(column_values)
+                )
                 print(statement)
                 cursor.execute(statement)
 
