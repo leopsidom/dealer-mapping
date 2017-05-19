@@ -17,6 +17,8 @@ class DataBase:
     uri = os.environ.get("URI")
     user = os.environ.get("USER")
     password = os.environ.get("PASSWORD")
+    proxy_host = os.environ.get("FIXIE_URL")
+    proxy_port = os.environ.get("FIXIE_PORT")
     # user = "pcds-sqlr@pcds-sqlr"
     # pwd = "Pure2017"
 
@@ -26,7 +28,8 @@ class DataBase:
 
     def get_connection(self):
         conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': self.user, 'password': self.pwd},
+                                  {'user': self.user, 'password': self.pwd,
+                                   'proxy_host': DataBase.proxy_host, 'proxy_port': DataBase.proxy_port},
                                   DataBase.driverPath)
 
         return conn
@@ -35,7 +38,8 @@ class DataBase:
     def get_connection_default():
 
         conn = jaydebeapi.connect(DataBase.driverClass, DataBase.uri,
-                                  {'user': DataBase.user, 'password': DataBase.password},
+                                  {'user': DataBase.user, 'password': DataBase.password,
+                                   'proxy_host': DataBase.proxy_host, 'proxy_port': DataBase.proxy_port},
                                   DataBase.driverPath)
 
         return conn
