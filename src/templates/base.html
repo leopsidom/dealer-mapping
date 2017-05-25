@@ -23,6 +23,9 @@
             <ul class="nav navbar-nav">
                 <li><a href="./" title="Stores">Archived</a></li>
             </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('dealer_mapping.users_statistics') }}" title="Users">users</a></li>
+            </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if session['email'] %}
                     <li><a href="{{ url_for('users.logout_user') }}" title="Log Out"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>

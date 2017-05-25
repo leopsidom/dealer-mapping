@@ -60,26 +60,36 @@ class DealerMapping:
         ))
         reviewed_times = cursor.fetchone()[0]
 
+        success = True
         if reviewed_times < self.votes_per_record - 1:
-
-            cursor.execute("UPDATE {table} SET ViewCounts={counts} where RecordId={record_id}".format(
-                table=self.toreview, counts=reviewed_times+1, record_id=record_id
-            ))
+            try:
+                cursor.execute("UPDATE {table} SET ViewCounts={counts} where RecordId={record_id}".format(
+                    table=self.toreview, counts=reviewed_times+1, record_id=record_id
+                ))
+            except:
+                success = False
         else:
 
-            cursor.execute("INSERT INTO {reviewed} SELECT * FROM {toreview} "
-                           "WHERE RecordId={record_id}".format(
-                reviewed=self.reviewed, toreview=self.toreview, record_id=record_id
-            ))
+            try:
+                cursor.execute("INSERT INTO {reviewed} SELECT * FROM {toreview} "
+                               "WHERE RecordId={record_id}".format(
+                    reviewed=self.reviewed, toreview=self.toreview, record_id=record_id
+                ))
 
-            cursor.execute("DELETE FROM {toreview} WHERE RecordId={record_id}".format(
-                toreview=self.toreview, record_id=record_id
-            ))
+                cursor.execute("DELETE FROM {toreview} WHERE RecordId={record_id}".format(
+                    toreview=self.toreview, record_id=record_id
+                ))
 
-        cursor.execute("INSERT INTO {user_reviewed} (UserId, RecordId, Match, Time) Values"
-                       "({user_id}, {record_id}, {match}, '{time}')".format(
-            user_reviewed=self.user_reviewed, user_id=user_id, record_id=record_id, match=match, time=time
-        ))
+            except:
+                success = False
+
+        if success:
+            cursor.execute("INSERT INTO {user_reviewed} (UserId, RecordId, Match, Time) Values"
+                           "({user_id}, {record_id}, {match}, '{time}')".format(
+                user_reviewed=self.user_reviewed, user_id=user_id, record_id=record_id, match=match, time=time
+            ))
+        else:
+            return "The record has already been reviewed by somebody else!"
 
     def get_statistics(self, user_id):
 
@@ -108,7 +118,20 @@ class DealerMapping:
                 'user_reviewed': user_reviewed,
                 'rank': -1 if rank is None else rank[2]}
 
+    def get_users_statistics(self):
 
+        cursor = DataBase.get_connection_default().cursor()
 
+        cursor.execute("select row_to_json(e) from ("
+                       "select users.email, d.review_counts from "
+                       "(select userid, count(userid) as review_counts "
+                       "from userreviewed "
+                       "group by userid) d "
+                       "inner join users on d.userid=users.userid) e")
 
+        users_statistics = cursor.fetchall()
+
+        return sorted((d for d, in users_statistics),
+                      key=lambda x: x['review_counts'],
+                      reverse=True)
 

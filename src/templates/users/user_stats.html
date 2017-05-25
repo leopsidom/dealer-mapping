@@ -1,0 +1,22 @@
+<{% extends "base.html" %}
+{% block content %}
+<div class="compare-table">
+    <div class="table-option">User statistics</div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Review Counts</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users_statistics %}
+            <tr>
+                <td>{{ user['email'] }}</td>
+                <td>{{ user['review_counts'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

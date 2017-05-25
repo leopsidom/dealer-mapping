@@ -50,7 +50,7 @@ def pair_of_dealers():
     return redirect(url_for('.pair_of_dealers'))
 
 
-
-
-
-
+@project_blueprint.route('/users', methods=['GET', 'POST'])
+def users_statistics():
+    dm = DealerMapping()
+    return render_template("users/user_stats.html", users_statistics=dm.get_users_statistics())
