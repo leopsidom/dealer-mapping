@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="compare-table">
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percentage }}%">
+            {{ percentage }}%
+        </div>
+    </div>
     <div class="table-option">Market Check & PureCars Dealers Pairs</div>
     <table class="table table-striped">
         <thead>

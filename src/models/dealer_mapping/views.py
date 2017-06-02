@@ -23,6 +23,10 @@ def list_of_projects():
 @project_blueprint.route('/label', methods=['GET', 'POST'])
 def pair_of_dealers():
     dm = DealerMapping()
+    stats = dm.get_total_statistics()
+    percentage = int(stats['reviewed']*100/(stats['reviewed'] + stats['toreview']))
+    print(percentage)
+
     if request.method == 'GET':
         record = dm.get_one_record_not_reviewed()
         if record is None:
@@ -31,7 +35,8 @@ def pair_of_dealers():
                                mc_pc_columns=record['mc_pc_columns'],
                                mc_dealerid=record['mc_dealerid'],
                                pc_dealerid=record['pc_dealerid'],
-                               record_id=record['record_id'])
+                               record_id=record['record_id'],
+                               percentage=percentage)
 
     user_id = User.find_by_email(session['email']).userid
     record_id = request.form['record_id']

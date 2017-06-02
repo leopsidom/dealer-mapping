@@ -135,3 +135,17 @@ class DealerMapping:
                       key=lambda x: x['review_counts'],
                       reverse=True)
 
+    def get_total_statistics(self):
+
+        cursor = DataBase.get_connection_default().cursor()
+
+        cursor.execute("select count(*) from {toreview}".format(toreview=self.toreview))
+        toreview = cursor.fetchone()[0]
+
+        cursor.execute("select count(*) from {reviewed}".format(reviewed=self.reviewed))
+        reviewed = cursor.fetchone()[0]
+
+        return {
+            "toreview": toreview,
+            "reviewed": reviewed
+        }
